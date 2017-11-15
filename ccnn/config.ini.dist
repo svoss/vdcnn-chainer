@@ -1,0 +1,22 @@
+# Default values for training script, please refer to arguments section of train.py for parameters explaination
+# Most values are default values used in the https://arxiv.org/pdf/1606.01781.pdf paper
+
+[training]
+epochs=15
+batch_size=128
+momentum=0.9
+gpu=0
+lr=0.01
+dataset=ag-news
+test=0
+
+
+[model]
+depth=17
+shortcut=0
+alphabet=abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:’"/|#$%ˆ&*˜‘+=<>()[]{}
+fixed_size=1014
+
+[output]
+prefix=./
+out=result
