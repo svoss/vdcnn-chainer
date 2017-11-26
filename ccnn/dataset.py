@@ -5,6 +5,8 @@ import os
 import csv
 import codecs
 import json
+from hashlib import md5
+
 
 class AlphabetEncoder(object):
     """
@@ -84,11 +86,20 @@ def get_yelp(type='full', loc=None):
     if loc is None:
         raise ValueError("Yelp dataset should be downloaded manually and location should be provided as yelp_location argument")
 
+    h = md5(loc).hexdigest()
 
-    root = download.get_dataset_directory('%s_%s' % (type, loc))
+    root = download.get_dataset_directory('%s_%s' % (type, h))
     data_npz = os.path.join(root, 'data.npz')
+    def _get_class(stars):
+        if type == 'full':
+            return stars - 1
+        #polarity
+        elif stars < 3:
+            return 0
+        elif stars > 3:
+            return 1
+        return -1
 
-    os.remove(data_npz)
     def creator(path):
         x_test = []
         y_test = []
@@ -100,15 +111,17 @@ def get_yelp(type='full', loc=None):
         with codecs.open(loc, encoding='utf8') as io:
             for l in io:
                 data = json.loads(l)
-                if type == 'full':
-                    if n_train[data['stars']] > 0:
+                c = _get_class(data['stars'])
+                if n_train[data['stars']] > 0:
+                    if c >= 0:
                         x_train.append(data['text'])
-                        y_train.append(data['stars'] - 1)
-                        n_train[data['stars']] -= 1
-                    elif n_test[data['stars']] > 0:
-                        n_test[data['stars']] -= 1
+                        y_train.append(c)
+                    n_train[data['stars']] -= 1
+                elif n_test[data['stars']] > 0:
+                    n_test[data['stars']] -= 1
+                    if c >= 0:
                         x_test.append(data['text'])
-                        y_test.append(data['stars'] - 1)
+                        y_test.append(c)
 
         x_train = np.array(x_train, dtype=np.unicode)
         y_train = np.array(y_train, dtype=np.int32)

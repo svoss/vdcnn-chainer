@@ -25,7 +25,7 @@ I picked the first 230,000 examples for each star rating as training set and the
 
 ## Dynamic k-max pooling in chainer
 The VDCNN makes use of a dynamic k-max pooling layer to select the 8 most important features over the complete sentence,
-while maintaining the order in which they where found. This layer is used just before the fully connected layers. The layer is not implemented in the chainer package so
+while maintaining the order in which they were found. This layer is used just before the fully connected layers. The layer is not implemented in the chainer package so
 I made my own implementation that can can be found in [ccnn/temporal_k_max_pooling.py].
 
 To  depth 17, 1.23 vs 1.30.
