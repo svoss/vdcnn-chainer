@@ -4,7 +4,7 @@ from chainer.datasets import TupleDataset
 import os
 import csv
 import codecs
-
+import json
 
 class AlphabetEncoder(object):
     """
@@ -80,6 +80,53 @@ def download_ag_news_dataset():
     return train, test
 
 
+def get_yelp(type='full', loc=None):
+    if loc is None:
+        raise ValueError("Yelp dataset should be downloaded manually and location should be provided as yelp_location argument")
+
+
+    root = download.get_dataset_directory('%s_%s' % (type, loc))
+    data_npz = os.path.join(root, 'data.npz')
+
+    os.remove(data_npz)
+    def creator(path):
+        x_test = []
+        y_test = []
+        x_train = []
+        y_train = []
+
+        n_train = dict([(n, 130000) for n in range(1,6)])
+        n_test = dict([(n, 15000) for n in range(1,6)])
+        with codecs.open(loc, encoding='utf8') as io:
+            for l in io:
+                data = json.loads(l)
+                if type == 'full':
+                    if n_train[data['stars']] > 0:
+                        x_train.append(data['text'])
+                        y_train.append(data['stars'] - 1)
+                        n_train[data['stars']] -= 1
+                    elif n_test[data['stars']] > 0:
+                        n_test[data['stars']] -= 1
+                        x_test.append(data['text'])
+                        y_test.append(data['stars'] - 1)
+
+        x_train = np.array(x_train, dtype=np.unicode)
+        y_train = np.array(y_train, dtype=np.int32)
+        x_test = np.array(x_test, dtype=np.unicode)
+        y_test = np.array(y_test, dtype=np.int32)
+        np.savez(path, x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test)
+
+        return (x_train, y_train), (x_test, y_test)
+
+    def loader(path):
+        data = np.load(path)
+        return (data['x_train'], data['y_train']), (data['x_test'], data['y_test'])
+
+    train, test = download.cache_or_load_file(data_npz, creator, loader)
+
+    return train, test
+
+
 def get_artificial_dataset(n=10000):
     """
     Very simple artificial dataset that can be used to see if no bugs in your code
@@ -93,18 +140,23 @@ def get_artificial_dataset(n=10000):
     return (X[:m, :], Y[:m]), (X[m:, :], Y[m:])
 
 
-def get_dataset(name):
+def get_dataset(name, yelp_loc=None):
     if name == 'ag-news':
         train, test = download_ag_news_dataset()
-        return train,test,4
-        #return val, test
+        return train, test, 4
+    if name == 'yelp-polarity':
+        train,test = get_yelp('polarity',yelp_loc)
+        return train, test, 2
+    if name == 'yelp-full':
+        train, test = get_yelp('full', yelp_loc)
+        return train, test, 5
     if name == 'artificial':
         train, test = get_artificial_dataset()
         return train, test, 2
     raise ValueError("Dataset %s not known, available options are: ag-news," % name)
 
-def get_character_encoding_dataset(name, encoder, test_mode=False):
-    train, test, n_classes = get_dataset(name)
+def get_character_encoding_dataset(name, encoder, test_mode=False, yelp_loc=None):
+    train, test, n_classes = get_dataset(name, yelp_loc=yelp_loc)
     if test_mode:
         train = train[0][:1000], train[1][:1000]
         test = test[0][:1000], test[1][:1000]

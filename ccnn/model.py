@@ -1,7 +1,7 @@
 import chainer
 import chainer.links as L
 import chainer.functions as F
-
+from temporal_k_max_pooling import temporal_k_max_pooling
 
 class VDCNN(chainer.Chain):
     """
@@ -40,7 +40,7 @@ class VDCNN(chainer.Chain):
             # [Convolutional Block, 3, 512]^d512
             c512=FeatureBlock(features=512, n=d512, shortcut=self.shortcut),
             # fc(4096, 2048)
-            fc0=L.Linear(512, 2048),
+            fc0=L.Linear(4096, 2048),
             # fc(2048, 2048)
             fc1=L.Linear(2048, 2048),
             # fc(2048, self.n_classes)
@@ -90,7 +90,10 @@ class VDCNN(chainer.Chain):
         h,_ = self.c512(h)
 
         # should be 8-max pooling
-        h = F.max_pooling_nd(h, h.shape[2], 1)
+
+        h = temporal_k_max_pooling(h,8)
+        #h = F.max_pooling_nd(h, 119,stride=1)
+
         h = F.relu(self.fc0(h))
         h = F.relu(self.fc1(h))
         h = self.fc2(h)

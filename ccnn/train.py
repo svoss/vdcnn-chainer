@@ -31,7 +31,7 @@ def define_args():
     parser.add_argument('--epochs', type=int, default=config.get('training', 'epochs'), help="Number of epochs to perform training for")
     parser.add_argument('--prefix', type=str, default=config.get('output', 'prefix'), help="Prefix to prefix output folder with")
     parser.add_argument('--out', type=str, default=config.get('output', 'out'), help="Output folder, concatenated with the prefix as output folder")
-
+    parser.add_argument('--yelp-location', type=str, default=config.get('dataset', 'yelp_location'), help="Location of yelp location")
     return parser.parse_args()
 
 
@@ -65,7 +65,7 @@ def train_model(args, model, train, test):
 
 def main(args):
     encoder = AlphabetEncoder(args.alphabet, args.fixed_size)
-    train, test, n_classes = get_character_encoding_dataset(args.dataset, encoder, test_mode=(args.test > 0))
+    train, test, n_classes = get_character_encoding_dataset(args.dataset, encoder, yelp_loc=args.yelp_location, test_mode=(args.test > 0))
     print "Training set has a size of %d " % len(train)
     print "Test set has a size of %d " % len(test)
     print "Number of classes: %d" % n_classes

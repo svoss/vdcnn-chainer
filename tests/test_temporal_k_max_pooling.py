@@ -11,8 +11,9 @@ from chainer import cuda
 
 from chainer.testing import attr
 @testing.parameterize(*testing.product({
-    'dtype': [np.float16, np.float32, np.float64],
+    'dtype': [np.float32, np.float64],
 }))
+#sadly np.float16 seems not to be supported by cupy.sort
 
 class TestTemporalKMaxPooling(unittest.TestCase):
 
@@ -28,10 +29,13 @@ class TestTemporalKMaxPooling(unittest.TestCase):
         self.backward_x = np.arange(3*25, dtype=self.dtype)
         np.random.shuffle(self.backward_x)
         self.backward_x = self.backward_x.reshape(3, 25)
-        self.y_grad = np.random.rand(3, 5).astype(self.dtype)
+        if self.dtype == np.int32:
+            self.y_grad = np.random.randint(0,1, size=(3, 5)).astype(self.dtype)
+        else:
+            self.y_grad =  np.random.rand(3, 5).astype(self.dtype)
 
 
-        # when dtype is float16, less accurate
+        # when dtype is float16, less accurate (not used for now as cupy.sort doesn't seem to support np.float16)
         if self.dtype == np.float16:
             self.check_backward_options = {
                 'atol': 1e-3, 'rtol': 1e-2}
@@ -77,17 +81,30 @@ class TestTemporalKMaxPooling(unittest.TestCase):
 
     @attr.gpu
     def test_forward_gpu(self):
-        self.check_forward(cuda.to_gpu(self.x))
+        self.check_forward(cuda.to_gpu(self.forward_x))
 
     @attr.gpu
     def test_forward_gpu_non_contiguous(self):
-        self.check_forward(cuda.cupy.asfortranarray(cuda.to_gpu(self.x)))
+        self.check_forward(cuda.cupy.asfortranarray(cuda.to_gpu(self.forward_x)))
 
     @attr.gpu
     def test_forward_gpu_no_cudnn(self):
-        self.check_forward(cuda.to_gpu(self.x), 'never')
+        self.check_forward(cuda.to_gpu(self.forward_x), 'never')
 
-            #(y[0], [11.0, 11.0, 11.0, 11.0, 11.0])
+
+    @attr.gpu
+    def test_backward_gpu(self):
+        self.check_backward(cuda.to_gpu(self.backward_x), cuda.to_gpu(self.y_grad))
+
+    @attr.gpu
+    def test_backward_gpu_non_contiguous(self):
+        self.check_backward(
+            cuda.cupy.asfortranarray(cuda.to_gpu(self.backward_x)),
+            cuda.cupy.asfortranarray(cuda.to_gpu(self.y_grad)))
+
+    @attr.gpu
+    def test_backward_gpu_no_cudnn(self):
+        self.check_backward(cuda.to_gpu(self.backward_x), cuda.to_gpu(self.y_grad),'never')
 
 
 testing.run_module(__name__, __file__)
