@@ -11,11 +11,11 @@ This paper implements the VDCNN architecture it provides an
 
 ## Datasets
 In the paper the datasets introduced in [this paper](https://arxiv.org/pdf/1509.01626.pdf) are re-used, from which the following are supported at the moment:
-| Dataset         | Classes |Training |Test    | Description |
-| :-------------- | :-----: |:-------:|:-----: | :---------- |
-| AG news         | 2       |2        |2       | I made use of [mhjarbreel](https://github.com/mhjabreel/CharCNN/) for providing the pre-processed csv|
-| Yelp-full*      | 5       |1,150,00 |100,000 |             |
-| Yelp-polarity*  | 2       |920,000  |80,000  |             |
+| Dataset         | Classes |Training |Test      |
+| :-------------- | :-----: |:-------:|:--------:|
+| AG news         | 2       |2        |2         |
+| Yelp-full*      | 5       |1,150,00 |100,000   |
+| Yelp-polarity*  | 2       |920,000  |80,000    |
 
 #### Yelp dataset
 Yelp dataset has to be manually downloaded from the yelp dataset challenge webpage and the review.json file location has to provided by the user using the `yelp_location` variable.
