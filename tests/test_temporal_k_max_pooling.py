@@ -2,10 +2,10 @@ import unittest
 import sys
 import numpy as np
 
-sys.path.append("../ccnn/")
+sys.path.append(".")
 from chainer import testing
 from chainer import gradient_check
-from ccnn.temporal_k_max_pooling import TemporalKMaxPooling, temporal_k_max_pooling
+from vdccnn.temporal_k_max_pooling import TemporalKMaxPooling, temporal_k_max_pooling
 import chainer
 from chainer import cuda
 from six.moves import xrange

@@ -7,15 +7,15 @@ Both python 2.7 and python 3 are supported. The following code will install the 
 __Installation:__
 ```
 pip install -r requirements.txt
-cp ccnn/config.ini.dist ccnn/config.ini
+cp vdccnn/config.ini.dist vdccnn/config.ini
 ```
 
 __Training:__
 ```
-python ccnn/train.py
+python vdccnn/train.py
 ```
 
-All arguments available can be found by running `ccnn/train.py --help`. The default value for each argument will be loaded from config.ini (you only have to pass the arguments that you want to change).
+All arguments available can be found by running `vdccnn/train.py --help`. The default value for each argument will be loaded from config.ini (you only have to pass the arguments that you want to change).
 
 
 ## Very Deep Convolutional Networks for Text Classification
@@ -44,7 +44,7 @@ I picked the first 130,000 examples for each star rating as training set and the
 ## Dynamic k-max pooling in chainer
 The VDCNN makes use of a dynamic k-max pooling layer to select the 8 most important features over the complete sentence,
 while maintaining the order in which they were found. This layer is used just before the fully connected layers. The layer is not implemented in the chainer package so
-I made my own implementation that can can be found [here](ccnn/temporal_k_max_pooling.py).
+I made my own implementation that can can be found [here](vdccnn/temporal_k_max_pooling.py).
 
 To give an indication of how well the layer performs computationally. On the ag-news dataset, a network with depth level 17 can be trained on a GTX-1070 gpu for 15 epochs in 1h 30m with the k max pooling layer. If we replace this layer with a max pooling layer of size 119 and stride 1, which results in exactly the same output size so all other calculation remain the same. The same training takes 1h 23m.
 
