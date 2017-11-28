@@ -92,7 +92,7 @@ class VDCNN(chainer.Chain):
         # should be 8-max pooling
 
         h = temporal_k_max_pooling(h,8)
-        #h = F.max_pooling_nd(h, 119,stride=1)
+        #h = F.max_pooling_nd(h, 119,stride=1) # this layer is enabled to get an idea about the performance of a network
 
         h = F.relu(self.fc0(h))
         h = F.relu(self.fc1(h))

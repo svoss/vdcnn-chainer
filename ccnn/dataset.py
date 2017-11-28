@@ -107,7 +107,7 @@ def get_yelp(type='full', loc=None):
         y_train = []
 
         n_train = dict([(n, 130000) for n in range(1,6)])
-        n_test = dict([(n, 15000) for n in range(1,6)])
+        n_test = dict([(n, 10000) for n in range(1,6)])
         with codecs.open(loc, encoding='utf8') as io:
             for l in io:
                 data = json.loads(l)
