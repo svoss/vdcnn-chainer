@@ -44,7 +44,7 @@ I picked the first 130,000 examples for each star rating as training set and the
 ## Dynamic k-max pooling in chainer
 The VDCNN makes use of a dynamic k-max pooling layer to select the 8 most important features over the complete sentence,
 while maintaining the order in which they were found. This layer is used just before the fully connected layers. The layer is not implemented in the chainer package so
-I made my own implementation that can can be found in [ccnn/temporal_k_max_pooling.py].
+I made my own implementation that can can be found [here](ccnn/temporal_k_max_pooling.py).
 
 To give an indication of how well the layer performs computationally. On the ag-news dataset, a network with depth level 17 can be trained on a GTX-1070 gpu for 15 epochs in 1h 30m with the k max pooling layer. If we replace this layer with a max pooling layer of size 119 and stride 1, which results in exactly the same output size so all other calculation remain the same. The same training takes 1h 23m.
 
