@@ -11,6 +11,7 @@ This paper implements the VDCNN architecture it provides an
 
 ## Datasets
 In the paper the datasets introduced in [this paper](https://arxiv.org/pdf/1509.01626.pdf) are re-used, from which the following are supported at the moment:
+
 | Dataset | Classes | Training examples | Test examples |
 | ---  | --- | --- | --- |
 | AG news         | 2       |2        |2         |
