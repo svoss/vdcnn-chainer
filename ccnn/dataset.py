@@ -6,7 +6,7 @@ import csv
 import codecs
 import json
 from hashlib import md5
-
+from six.moves import xrange
 
 class AlphabetEncoder(object):
     """
@@ -88,7 +88,7 @@ def get_yelp(type='full', loc=None):
 
     h = md5(loc).hexdigest()
 
-    root = download.get_dataset_directory('%s_%s' % (type, h))
+    root = download.get_dataset_directory("{}_{}".format(type, h))
     data_npz = os.path.join(root, 'data.npz')
     def _get_class(stars):
         if type == 'full':
@@ -174,7 +174,8 @@ def get_character_encoding_dataset(name, encoder, test_mode=False, yelp_loc=None
         train = train[0][:1000], train[1][:1000]
         test = test[0][:1000], test[1][:1000]
     from collections import Counter
-    print Counter(train[1])
+    print("Examples training set per class:")
+    print(Counter(train[1]))
     if name == 'artificial':
         return TupleDataset(*train), TupleDataset(*test), n_classes
     return CharacterEncodingDataset(datasets=train, encoder=encoder), CharacterEncodingDataset(datasets=test, encoder=encoder), n_classes

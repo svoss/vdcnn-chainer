@@ -1,11 +1,11 @@
-# Default values for training script, please refer to arguments section of train.py for parameters explaination
+# Default values for training script, please refer to arguments section of train.py for parameters explanation
 # Most values are default values used in the https://arxiv.org/pdf/1606.01781.pdf paper
 
 [training]
 epochs=15
 batch_size=128
 momentum=0.9
-gpu=0
+gpu=-1
 lr=0.01
 dataset=ag-news
 test=0
@@ -20,3 +20,6 @@ fixed_size=1014
 [output]
 prefix=./
 out=result
+
+[dataset]
+yelp_location=datasets/yelp.json

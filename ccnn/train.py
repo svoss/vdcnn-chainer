@@ -13,7 +13,7 @@ import chainer.links as L
 import os
 import sys
 from helper import count_model_parameters
-
+import six
 def define_args():
     config = get_config()
     # defaults are loaded from config.ini file
@@ -21,7 +21,7 @@ def define_args():
     parser.add_argument('--gpu', type=int, default=config.get('training', 'gpu'), help="GPU ID (negative value indicates CPU)")
     parser.add_argument('--depth', type=int, default=config.get('model', 'depth'), help="Depth of the network in terms of convolutional layers either 9, 17, 29 or 49")
     #parser.add_argument('--shortcut', type=int, default=config.get('model', 'shortcut'), help="Use resnet like shortcuts, int below 1 indicates no shortcut at least 1 indicates using shortcut ")
-    parser.add_argument('--alphabet', type=str, default=config.get('model', 'alphabet'), help="Alphabet of characters to use")
+    parser.add_argument('--alphabet', type=type(six.u('')), default=config.get('model', 'alphabet'), help="Alphabet of characters to use")
     parser.add_argument('--test', type=int, default=config.get('training','test'), help="Set to 1 for test modus, training and test set to 1000 examples for testing purposes")
     parser.add_argument('--fixed_size', type=int, default=config.get('model', 'fixed_size'), help="Fixed size to pad sentences to, input larger then this text will be truncated")
     parser.add_argument('--dataset', type=str, default=config.get('training', 'dataset'), help="The dataset to train on. Choose from ag-news, yelp-full, yelp-polarity ")
@@ -66,12 +66,12 @@ def train_model(args, model, train, test):
 def main(args):
     encoder = AlphabetEncoder(args.alphabet, args.fixed_size)
     train, test, n_classes = get_character_encoding_dataset(args.dataset, encoder, yelp_loc=args.yelp_location, test_mode=(args.test > 0))
-    print "Training set has a size of %d " % len(train)
-    print "Test set has a size of %d " % len(test)
-    print "Number of classes: %d" % n_classes
+    print("Training set has a size of {}".format(len(train)))
+    print("Test set has a size of {}".format(len(test)))
+    print("Number of classes: {}".format(n_classes))
     model = VDCNN(depth=args.depth, n_classes=n_classes)
     model = L.Classifier(model)
-    print "Total number of model parameters: %sM" % (count_model_parameters(model) / float(10 ** 6))
+    print("Total number of model parameters: {}M".format(count_model_parameters(model) / float(10 ** 6)))
     train_model(args, model, train, test)
 
 

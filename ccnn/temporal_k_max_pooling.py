@@ -2,7 +2,7 @@ from chainer import Function
 import numpy as np
 from operator import mul
 from chainer import cuda
-
+from six.moves import xrange
 class TemporalKMaxPooling(Function):
     """ The temporal K max pooling selects the k highest values of an input vector
     while keeping the ordering of the elements in tact. It always assumes that the last dimension is the highest dimension
@@ -23,14 +23,14 @@ class TemporalKMaxPooling(Function):
         self.d = self.org_shape[-1]
 
         # Checks
-        assert x.ndim > 1, ("Temporal K max pooling only support 2d or higher input, got %d" % x.ndim)
-        assert x.shape[-1] >= self.k, "Input of temporal K-max pooling layer should be equal or higher then k (k=%d, %d given)" % (self.k , x.shape[-1])
+        assert x.ndim > 1, ("Temporal K max pooling only support 2d or higher input, got {}".format(x.ndim))
+        assert x.shape[-1] >= self.k, "Input of temporal K-max pooling layer should be equal or higher then k (k={}, {} given)".format(self.k , x.shape[-1])
 
         xp = cuda.get_array_module(*inputs)
         k = xp.partition(x, self.d-self.k, axis=-1)[..., -self.k:]
 
         inputs = (x.flatten(), k.flatten())
-        self.n = inputs[0].shape[0] / self.d
+        self.n = inputs[0].shape[0] // self.d
 
         output = super(TemporalKMaxPooling, self).forward(inputs)
         # reshape back
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     x = np.array(x, dtype=np.float32).reshape((3, 1, 100))
     x = cuda.to_gpu(x)
     tmp = TemporalKMaxPooling(5)
-    print tmp.forward((x,))
-    print tmp.indexes
+    print(tmp.forward((x,)))
+    print(tmp.indexes)
 
 

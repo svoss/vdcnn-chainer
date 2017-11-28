@@ -2,6 +2,7 @@ import chainer
 import chainer.links as L
 import chainer.functions as F
 from temporal_k_max_pooling import temporal_k_max_pooling
+from six.moves import xrange
 
 class VDCNN(chainer.Chain):
     """
@@ -65,7 +66,7 @@ class VDCNN(chainer.Chain):
             return 5, 2, 2
         elif self.depth == 49:
             return 8, 5, 3
-        raise ValueError("Depth of VDCNN network should be 9, 17, 29 or 49, %d given" % self.depth)
+        raise ValueError("Depth of VDCNN network should be 9, 17, 29 or 49, {} given".format(self.depth))
 
     def __call__(self, x):
 
@@ -126,7 +127,7 @@ class FeatureBlock(chainer.ChainList):
         self.features = features
         self.n = n
         self.shortcut = shortcut
-        in_features = 64 if features == 64 else features/2 # input features of first layer
+        in_features = 64 if features == 64 else features // 2 # input features of first layer
         for _ in xrange(self.n):
             self.add_link(ConvBlock(in_features, features))
             in_features = features

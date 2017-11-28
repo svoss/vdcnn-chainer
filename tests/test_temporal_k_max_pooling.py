@@ -8,7 +8,7 @@ from chainer import gradient_check
 from ccnn.temporal_k_max_pooling import TemporalKMaxPooling, temporal_k_max_pooling
 import chainer
 from chainer import cuda
-
+from six.moves import xrange
 from chainer.testing import attr
 @testing.parameterize(*testing.product({
     'dtype': [np.float32, np.float64],
